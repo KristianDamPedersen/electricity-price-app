@@ -3,15 +3,31 @@
     import { onMount } from 'svelte';
 	import OptionPicker from "./+OptionPicker.svelte";
     import BarChart from "./+BarChart.svelte";
-    let recordStore = createRecords();
+    import { records } from './stores'
+
+    function calcHours(recordList) {
+        let hours = []
+        recordList.map(record => hours.push(record.HourDK))
+        return hours
+    }
+    let hours = calcHours($records)
+    function calcPrices(recordList) {
+        let prices = []
+        recordList.map(record => prices.push(record.SpotPriceDKK))
+        return prices
+    }
+    let prices = calcHours($records)
     async function handleSubmit(options) {
         // Execute API call
-        console.log(options)
         let json = await FetchWithOptions(options.detail)
 
         // Update the store
-        recordStore.populate(json)
+        records.populate(json)
     }
+    records.subscribe(() => {
+        hours = calcHours($records)
+        prices = calcPrices($records)
+    })
 
     // Define onMount function
     onMount(async () => {
@@ -33,10 +49,12 @@
         }
         let res = await FetchWithOptions(options)
 
+        console.log(hours)
         // Populate our recordStore
-        recordStore.populate(res)
-    })
+        records.populate(res)
 
+
+    })
 
     </script>
 
@@ -45,5 +63,5 @@
 
 
 
-<BarChart chartValues = {[1,2,3,4]} chartLabels = {["1", "2", "3", "4"]}/>
+<BarChart chartLabels = {hours} chartValues = {prices} context = {records} />
 <OptionPicker on:optionsubmit={handleSubmit}/>
