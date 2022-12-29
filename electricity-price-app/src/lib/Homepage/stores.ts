@@ -1,3 +1,4 @@
+import { json } from '@sveltejs/kit'
 import { writable } from 'svelte/store'
 
 
@@ -13,15 +14,16 @@ export interface option{
     end: Date,
     PriceArea: string
 }
-export const records = writable<Record[]>()
-
 //Makes an APICall to the danish public database, and populates the a store
-export function populateWithAPICall(option : option){
-    let url = "https://api.energidataservice.dk/dataset/Elspotpriceshttps://api.energidataservice.dk/dataset/Elspotprices"
+export async function FetchWithOptions(option){
+    let url = "https://api.energidataservice.dk/dataset/Elspotprices"
     + `?start=${option.start}`
     + `&end=${option.end}`
-    +`&filter={"PriceArea":["${option.PriceArea}"]}`
-
+    +`&filter={"PriceArea":["${option.area}"]}`
+    const res = await fetch(url)
+    const jsonres = await res.json()
+    console.log(jsonres)
+    return jsonres["records"]
 }
 
 export function createRecords() {
@@ -30,6 +32,7 @@ export function createRecords() {
     return {
         subscribe,
         add: (record) => update( oldRecords => [...oldRecords, record]),
+        populate: (recordList) => set(recordList),
         reset: () => set([]),
     }
 

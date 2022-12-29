@@ -1,6 +1,7 @@
 <script>
+    import {createEventDispatcher} from 'svelte'
 
-
+    const dispatch = createEventDispatcher()
     let options  ={
         start : "",
         end : "",
@@ -8,7 +9,7 @@
     };
     function handleSubmit(e){
         e.preventDefault()
-        alert("submiiiit")
+        dispatch('optionsubmit',options)
     }
 </script>
 

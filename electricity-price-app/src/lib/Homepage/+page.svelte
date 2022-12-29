@@ -1,21 +1,16 @@
 <script lang = "ts">
-    import  { records, createRecords } from "./stores";
-    import Optionpicker from './+OptionPicker.svelte'
+    import  {createRecords, FetchWithOptions } from "./stores";
 	import OptionPicker from "./+OptionPicker.svelte";
-    // import  { Record } from "./stores"
-
 
     let recordStore = createRecords();
-    let testRecord = {
-        HourUTC: new Date(Date.parse("2022-12-18T00:00")),
-        HourDK: new Date(Date.parse("2022-12-18T00:00")),
-        PriceArea: "DK1",
-        SpotPriceDKK: 150,
-        SpotPriceEUR: 20,
-    };
+    async function handleSubmit(options) {
+        // Execute API call
+        console.log(options)
+        let json = await FetchWithOptions(options.detail)
 
-     recordStore.add(testRecord);
-     recordStore.add(testRecord);
+        // Update the store
+        recordStore.populate(json)
+    }
     </script>
 
 <h2>This is the heading from Homepage</h2>
@@ -29,4 +24,4 @@
     <p>Spot price EUR: {rec.SpotPriceEUR}</p>
 {/each}
 
-<OptionPicker />
+<OptionPicker on:optionsubmit={handleSubmit}/>
