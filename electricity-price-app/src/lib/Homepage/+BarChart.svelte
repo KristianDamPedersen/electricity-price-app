@@ -2,8 +2,8 @@
     import Chart from 'chart.js/auto';
     import { onMount } from 'svelte';
 
-    let chartValues = [20, 10, 5, 2, 20, 30, 45];
-    let chartLabels = ['January', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'];
+    export let chartValues ;
+    export let chartLabels ;
     let chartCanvas;
 
     onMount(() => {

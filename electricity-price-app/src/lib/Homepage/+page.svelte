@@ -45,5 +45,5 @@
 
 
 
-<BarChart/>
+<BarChart chartValues = {[1,2,3,4]} chartLabels = {["1", "2", "3", "4"]}/>
 <OptionPicker on:optionsubmit={handleSubmit}/>
