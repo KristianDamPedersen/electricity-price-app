@@ -25,7 +25,7 @@ export async function FetchWithOptions(option){
     console.log(jsonres)
     return jsonres["records"]
 }
-
+// Creates a store consisting of records (type Record).
 export function createRecords() {
     const { subscribe, set, update } = writable<Record[]>([]);
 
