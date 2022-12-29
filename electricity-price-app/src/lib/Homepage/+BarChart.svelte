@@ -7,15 +7,15 @@
     export let context;
     export let chartLabels;
     export let chartValues;
-    context.subscribe(() => {
+    chartValues.subscribe(() => {
         if(loaded){
             chart.data.labels = []
             chart.data.datasets[0] = []
-            for(let label of chartLabels){
+            for(let label of $chartLabels){
                 chart.data.labels.push(label)
             }
             let rawData = []
-            for(let dataEntry of chartValues){
+            for(let dataEntry of $chartValues){
                 rawData.push(dataEntry)
             }
             chart.data.datasets[0] = {
@@ -23,8 +23,6 @@
                 data: rawData,
                 borderWidth: 1
             }
-            console.log( chart.data.labels,
-            chart.data.datasets[0])
         //update
         chart.update()
 
@@ -38,10 +36,10 @@
         chart = new Chart(ctx, {
             type: 'bar',
             data: {
-            labels: chartLabels,
+            labels: $chartLabels,
             datasets: [{
                 label: 'Stonks',
-                data: chartValues,
+                data: $chartValues,
                 borderWidth: 1
             }]
             },

@@ -2,21 +2,24 @@
     import  {createRecords, FetchWithOptions } from "./stores";
     import { onMount } from 'svelte';
 	import OptionPicker from "./+OptionPicker.svelte";
+    import { writable } from 'svelte/store';
+    import { createEventDispatcher } from 'svelte';
     import BarChart from "./+BarChart.svelte";
     import { records } from './stores'
-
+    let hours = writable([]);
+    let prices = writable([]);
+    // Creates an array of dates + times in the current record store, timezone UTC+1 (Copenhagen)
     function calcHours(recordList) {
-        let hours = []
-        recordList.map(record => hours.push(record.HourDK))
+        hours.set([])
+        recordList.map(record => hours.update( prevHours => [...prevHours, record.HourDK]));
         return hours
     }
-    let hours = calcHours($records)
+    // Creates an array of all the prices from the record store.
     function calcPrices(recordList) {
-        let prices = []
-        recordList.map(record => prices.push(record.SpotPriceDKK))
+        prices.set([]);
+        recordList.map(record => prices.update( prices => [...prices, record.SpotPriceDKK]))
         return prices
     }
-    let prices = calcHours($records)
     async function handleSubmit(options) {
         // Execute API call
         let json = await FetchWithOptions(options.detail)
@@ -24,10 +27,12 @@
         // Update the store
         records.populate(json)
     }
+
+    // Subscribe to our record store, so that hours and prices are updated when new data arrives into it.
     records.subscribe(() => {
         hours = calcHours($records)
         prices = calcPrices($records)
-    })
+    });
 
     // Define onMount function
     onMount(async () => {
@@ -49,19 +54,11 @@
         }
         let res = await FetchWithOptions(options)
 
-        console.log(hours)
         // Populate our recordStore
         records.populate(res)
-
-
     })
-
     </script>
 
-
 <h2>This is the heading from Homepage</h2>
-
-
-
-<BarChart chartLabels = {hours} chartValues = {prices} context = {records} />
+<BarChart chartLabels = {hours} chartValues = {prices}/>
 <OptionPicker on:optionsubmit={handleSubmit}/>

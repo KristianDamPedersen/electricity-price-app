@@ -15,7 +15,7 @@ export interface option{
     end: Date,
     PriceArea: string
 }
-//Makes an APICall to the danish public database, and populates the a store
+//Makes an API Call to the danish public database, and populates the a store
 export async function FetchWithOptions(option){
     let url = "https://api.energidataservice.dk/dataset/Elspotprices"
     + `?start=${option.start}`
@@ -23,8 +23,7 @@ export async function FetchWithOptions(option){
     +`&filter={"PriceArea":["${option.area}"]}`
     const res = await fetch(url)
     const jsonres = await res.json()
-    console.log(jsonres)
-    return jsonres["records"]
+    return jsonres["records"].reverse()
 }
 
 // Creates a store consisting of records (type Record).
@@ -50,20 +49,3 @@ export function createRecords() {
 
 }
 export let records = createRecords()
-// export const hours = derived(
-//     records,
-//     $records => (function(oldRecords) {
-//         oldRecords.map( record => hours.push(record.HourDK));
-//     })
-// )
-//
-// export const prices = derived(
-//     records,
-//     $records => (function(oldRecords) {
-//         let prices = []
-//         oldRecords.map( record => hours.push(record.SpotPriceDKK));
-//         prices  = prices
-//         return prices
-//     })
-// )
-export const count = writable(0)
