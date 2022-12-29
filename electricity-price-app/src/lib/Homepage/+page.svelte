@@ -40,16 +40,10 @@
 
     </script>
 
-<BarChart/>
+
 <h2>This is the heading from Homepage</h2>
 
-{#each $recordStore as rec}
-    <h2>#### NEW RECORD ####</h2>
-    <p>HourUTC: {rec.HourUTC}</p>
-    <p>Hour DK: {rec.HourDK}</p>
-    <p>Price area: {rec.PriceArea}</p>
-    <p>Spot price DKK: {rec.SpotPriceDKK}</p>
-    <p>Spot price EUR: {rec.SpotPriceEUR}</p>
-{/each}
 
+
+<BarChart/>
 <OptionPicker on:optionsubmit={handleSubmit}/>
