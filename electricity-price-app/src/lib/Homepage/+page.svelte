@@ -59,6 +59,6 @@
     })
     </script>
 
-<h2>This is the heading from Homepage</h2>
+<h2>Hosted on Vercel :D</h2>
 <BarChart chartLabels = {hours} chartValues = {prices}/>
 <OptionPicker on:optionsubmit={handleSubmit}/>
