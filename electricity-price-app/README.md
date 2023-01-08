@@ -36,3 +36,10 @@ npm run build
 You can preview the production build with `npm run preview`.
 
 > To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+
+## Hosting
+We are currently hosted on Vercel:
+https://vercel.com/kristiandampedersen/electricity-price-app/BSEzpfZAn4A2RHVzyDTS3TyNQRm7
+
+Url:
+https://electricity-price-app.vercel.app/
