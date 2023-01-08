@@ -1,0 +1,29 @@
+name: Build and Deploy
+on:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  build:
+    name: Build and Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout Repo"
+        uses: actions/checkout@master
+      
+      - name: "Install pnpm"
+        uses: pnpm/action-setup@v1.2.1
+        with:
+          version: 5.x
+      - name: "Install Dependencies"
+        run: "pnpm install"
+      
+      - name: "Build the Site"
+        run: "pnpm run build"
+      - name: "Deploy to Firebase"
+        run: "pnpm run deploy -- --message '$COMMIT_MESSAGE'"
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
