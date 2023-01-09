@@ -6,6 +6,7 @@
     import { createEventDispatcher } from 'svelte';
     import BarChart from "./+BarChart.svelte";
     import { records } from './stores'
+    import '../../global.css'
     let hours = writable([]);
     let prices = writable([]);
     // Creates an array of dates + times in the current record store, timezone UTC+1 (Copenhagen)
@@ -59,6 +60,26 @@
     })
     </script>
 
-<h2>Hosted on Vercel :D</h2>
+<div class="navbar">
+    <h1 class="heading">SmartPower (name)?</h1>
+</div>
 <BarChart chartLabels = {hours} chartValues = {prices}/>
 <OptionPicker on:optionsubmit={handleSubmit}/>
+
+<style>
+    .navbar {
+        width: auto;
+        display: flex;
+        padding-left: 3em;
+        justify-content: start;
+        align-items: center;
+        height: 3em;
+        box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;;
+        background-color: var(--main-bg-color);
+    }
+    .heading {
+        margin: 0;
+        color: var(--text-black);
+        font: var(--main-font-family);
+    }
+</style>

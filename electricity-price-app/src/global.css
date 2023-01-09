@@ -1,0 +1,15 @@
+@font-face {
+    font-family: cutive-mono, monospace;
+    src: url('https://fonts.googleapis.com/css2?family=Cutive+Mono&display=swap');
+}
+:root {
+    --main-font-family: cutive-mono;
+    --main-bg-color: #ffff;
+    --main-accent-yellow: #ffc900;
+    --main-accent-pink: #ff90e8;
+    --text-black: #1d1d1d;
+    --secondary-blue: #90a8ed;
+    --secondary-green: #23A094;
+    --secondary-orange: #ff7051;
+    --secondary-yellow: #f1f333;
+}
