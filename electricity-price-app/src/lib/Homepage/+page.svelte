@@ -63,10 +63,50 @@
 <div class="navbar">
     <h1 class="heading">SmartPower (name)?</h1>
 </div>
-<BarChart chartLabels = {hours} chartValues = {prices}/>
+<div class="content-container">
+    <div class="button-container">
+        <button class="button">24 hours</button>
+        <button class="button">3 days</button>
+        <button class="button">1 week</button>
+        <button class="button">1 month</button>
+        <button class="button">6 months</button>
+        <button class="button">12 months</button>
+    </div>
+    <BarChart chartLabels = {hours} chartValues = {prices}/>
+</div>
 <OptionPicker on:optionsubmit={handleSubmit}/>
 
 <style>
+    .content-container {
+        margin: 2em;
+        display: grid;
+        grid-auto-flow: column;
+        grid-gap: 2em;
+        grid-template-columns: 20% 80%;
+    }
+
+    .button-container {
+        align-self: start;
+        justify-content: stretch;
+        display: grid;
+        grid-gap: 1em;
+    }
+
+    .button {
+        height: 6em;
+        min-width: 10em;
+        max-width: 40em;
+        background-color: var(--secondary-green);
+        border-radius: 1em;
+        border-color: var(--text-black);
+        font: var(--main-font-family);
+        color: var(--text-black);
+        box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    }
+
+    .button:hover {
+        scale: 105%;
+    }
     .navbar {
         width: auto;
         display: flex;
