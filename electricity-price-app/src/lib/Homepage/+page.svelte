@@ -2,7 +2,7 @@
     import  {createRecords, FetchWithOptions } from "./stores";
     import { onMount } from 'svelte';
 	import OptionPicker from "./+OptionPicker.svelte";
-    import Button from "./button/+button.svelte"
+    import Button from "./Button/+Button.svelte"
     import { writable } from 'svelte/store';
     import { createEventDispatcher } from 'svelte';
     import BarChart from "./+BarChart.svelte";
@@ -35,7 +35,7 @@
         hours = calcHours($records)
         prices = calcPrices($records)
     });
-
+    // Lazy load the data for the last 24 hours
     let lazyLoad = async () => {
         // Get current date and format it correctly
         const today = new Date();
