@@ -2,6 +2,7 @@
     import  {createRecords, FetchWithOptions } from "./stores";
     import { onMount } from 'svelte';
 	import OptionPicker from "./+OptionPicker.svelte";
+    import Button from "./button/+button.svelte"
     import { writable } from 'svelte/store';
     import { createEventDispatcher } from 'svelte';
     import BarChart from "./+BarChart.svelte";
@@ -41,9 +42,6 @@
         const yesterday = new Date(today);
         yesterday.setDate(yesterday.getDate() -1)
 
-        console.log(today.toISOString().split('T')[0])
-        console.log(yesterday.toISOString().split('T')[0])
-
         const startDate = yesterday.toISOString().split('T')[0]
         const endDate = today.toISOString().split('T')[0]
 
@@ -75,12 +73,12 @@
             <p>oops something went wrong: {error.message}</p>
     {/await}
     <div class="button-container">
-        <button class="button">24 hours</button>
-        <button class="button">3 days</button>
-        <button class="button">1 week</button>
-        <button class="button">1 month</button>
-        <button class="button">6 months</button>
-        <button class="button">12 months</button>
+        <Button text="24 hours"/>
+        <Button text="3 days"/>
+        <Button text="1 week"/>
+        <Button text="1 month"/>
+        <Button text="6 months"/>
+        <Button text="12 months"/>
     </div>
     <OptionPicker on:optionsubmit={handleSubmit}/>
 </div>
@@ -114,31 +112,6 @@
         box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
     }
 
-    .button {
-        margin: 2em;
-        height: 6em;
-        min-width: 10em;
-        max-width: 40em;
-        cursor: pointer;
-        background-color: var(--secondary-green);
-        border-radius: 1em;
-        border-color: var(--text-black);
-        font: var(--main-font-family);
-        font-size: medium;
-        color: var(--text-black);
-        box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
-    }
-
-    .button:hover {
-        transition-duration: 0.1s;
-        scale: 105%;
-        background-color: var(--secondary-green-highlighted);
-    }
-
-    .button:active {
-        transition-duration: 0.1s;
-        scale: 95%;
-    }
     .navbar {
         width: auto;
         display: flex;
