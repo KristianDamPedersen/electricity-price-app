@@ -64,6 +64,9 @@
     <h1 class="heading">SmartPower (name)?</h1>
 </div>
 <div class="content-container">
+    <div class="graph">
+        <BarChart chartLabels = {hours} chartValues = {prices}/>
+    </div>
     <div class="button-container">
         <button class="button">24 hours</button>
         <button class="button">3 days</button>
@@ -72,27 +75,40 @@
         <button class="button">6 months</button>
         <button class="button">12 months</button>
     </div>
-    <BarChart chartLabels = {hours} chartValues = {prices}/>
+    <OptionPicker on:optionsubmit={handleSubmit}/>
 </div>
-<OptionPicker on:optionsubmit={handleSubmit}/>
 
 <style>
     .content-container {
-        margin: 2em;
-        display: grid;
-        grid-auto-flow: column;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
         grid-gap: 2em;
+        max-height: 80%;
+        margin: 2em;
+        z-index: 2;
         grid-template-columns: 20% 80%;
     }
 
     .button-container {
-        align-self: start;
-        justify-content: stretch;
+        align-self: center;
+        margin-top: 2em;
+        justify-content: center;
         display: grid;
-        grid-gap: 1em;
+        grid-auto-flow: column;
+        grid-template-columns: repeat(5, 1fr);
+        height: 100%;
+        max-width: 100em;
+        border-style: inset;
+        border-color: var(--text-black);
+        border-radius: 1em;
+        background-color: var(--main-accent-yellow);
+        box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
     }
 
     .button {
+        margin: 2em;
         height: 6em;
         min-width: 10em;
         max-width: 40em;
@@ -121,5 +137,9 @@
         margin: 0;
         color: var(--text-black);
         font: var(--main-font-family);
+    }
+
+    .graph {
+        height: 50em;
     }
 </style>

@@ -1,8 +1,14 @@
 <script>
     import Chart from 'chart.js/auto';
     import { onMount } from 'svelte';
+    import '../../global.css';
     let chart;
     let loaded = false
+    let fillColor = '';
+    const hex2rgba = (hex, alpha = 1) => {
+        const [r, g, b] = hex.match(/\w\w/g).map(x => parseInt(x, 16));
+        return `rgba(${r},${g},${b},${alpha})`;
+    };
     let chartCanvas;
     export let context;
     export let chartLabels;
@@ -19,8 +25,13 @@
                 rawData.push(dataEntry)
             }
             chart.data.datasets[0] = {
-                label: 'Stonks',
+                label: 'Price EUR',
                 data: rawData,
+                fill: true,
+                pointStyle: 'circle',
+                pointRadius: 10,
+                backgroundColor: hex2rgba(fillColor, 0.5),
+                pointHoverRadius: 15,
                 borderWidth: 1
             }
         //update
@@ -32,31 +43,45 @@
     onMount(() => {
 
         const ctx = document.getElementById('myChart');
+        fillColor = getComputedStyle(document.getElementById("myChart")).getPropertyValue('--fill-color')
 
         chart = new Chart(ctx, {
-            type: 'bar',
+            type: 'line',
             data: {
             labels: $chartLabels,
             datasets: [{
-                label: 'Stonks',
+                label: 'Price EUR',
+                fill: true,
+                lineTension: 0.4,
                 data: $chartValues,
-                borderWidth: 1
+                pointStyle: 'circle',
+                pointRadius: 10,
+                pointHoverRadius: 15,
+                backgroundColor: hex2rgba(fillColor, 0.5),
+                borderWidth: 1,
             }]
             },
             options: {
+                responsive: true,
+                maintainAspectRatio: false,
                 scales: {
                     y: {
                         beginAtZero: false
                     }
-            }
+                },
+                plugins: {
+                }
             }
         });
         loaded = true
     })
 </script>
-<div>
+<canvas class="graph" id="myChart" ></canvas>
 
-
-<canvas id="myChart" ></canvas>
-
-</div>
+<style>
+    .graph {
+        width: 100%;
+        height: 100%;
+        --fill-color: var(--secondary-orange);
+    }
+</style>
