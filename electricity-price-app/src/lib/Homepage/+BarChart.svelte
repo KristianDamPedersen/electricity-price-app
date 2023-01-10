@@ -5,6 +5,7 @@
     let chart;
     let loaded = false
     let fillColor = '';
+    // Converts hex values to rgb. Credit: https://stackoverflow.com/questions/21646738/convert-hex-to-rgba
     const hex2rgba = (hex, alpha = 1) => {
         const [r, g, b] = hex.match(/\w\w/g).map(x => parseInt(x, 16));
         return `rgba(${r},${g},${b},${alpha})`;
