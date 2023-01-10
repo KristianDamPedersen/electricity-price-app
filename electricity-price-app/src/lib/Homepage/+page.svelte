@@ -35,38 +35,45 @@
         prices = calcPrices($records)
     });
 
-    // Define onMount function
-    onMount(async () => {
-
+    let lazyLoad = async () => {
         // Get current date and format it correctly
-        const fullDate = new Date();
-        let day = fullDate.getDate();
-        let month = fullDate.getMonth() + 1;
-        let year = fullDate.getFullYear();
+        const today = new Date();
+        const yesterday = new Date(today);
+        yesterday.setDate(yesterday.getDate() -1)
 
-        const startDate = `${year}-${month}-${day}T00:00`
-        const endDate = `${year}-${month}-${day}T23:59`
+        console.log(today.toISOString().split('T')[0])
+        console.log(yesterday.toISOString().split('T')[0])
+
+        const startDate = yesterday.toISOString().split('T')[0]
+        const endDate = today.toISOString().split('T')[0]
 
         // Execute API call with current date and default zone (DK1)
         let options = {
             start: startDate,
             end: endDate,
-            area: "DK1"
+            area: "dk1"
         }
-        let res = await FetchWithOptions(options)
-
-        // Populate our recordStore
-        records.populate(res)
-    })
+        let promise = await FetchWithOptions(options)
+        records.populate(promise)
+        return promise
+    }
     </script>
 
 <div class="navbar">
     <h1 class="heading">SmartPower (name)?</h1>
 </div>
 <div class="content-container">
-    <div class="graph">
-        <BarChart chartLabels = {hours} chartValues = {prices}/>
-    </div>
+    {#await lazyLoad()}
+        <div class="graph">
+            <h1>Loading</h1>
+        </div>
+    {:then}
+        <div class="graph">
+            <BarChart chartLabels = {hours} chartValues = {prices}/>
+        </div>
+    {:catch error}
+            <p>oops something went wrong: {error.message}</p>
+    {/await}
     <div class="button-container">
         <button class="button">24 hours</button>
         <button class="button">3 days</button>

@@ -9,6 +9,7 @@
     };
     function handleSubmit(e){
         e.preventDefault()
+        console.log(options)
         dispatch('optionsubmit',options)
     }
 </script>
