@@ -1,8 +1,16 @@
 <script>
+	import { createEventDispatcher } from "svelte";
+
+
     export let text = "";
+    const dispatch = createEventDispatcher()
+
+    function handleClick(event){
+        dispatch('click', event.detail)
+    }
 </script>
 
-<button class="button">{text}</button>
+<button class="button" on:click={handleClick}>{text}</button>
 
 <style>
     .button {
