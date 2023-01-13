@@ -10,6 +10,12 @@
         const [r, g, b] = hex.match(/\w\w/g).map(x => parseInt(x, 16));
         return `rgba(${r},${g},${b},${alpha})`;
     };
+
+    //Takes a YYYY-MM-DD-T-HH:MM:SS and retrieves only the hour
+    const GetHourFromUTC = (timeToday) => {
+        return timeToday.split("T")[1].split(":")[0]
+    }
+    let numOfDaysToDisplay = 1;
     let chartCanvas;
     export let context;
     export let chartLabels;
@@ -19,7 +25,10 @@
             chart.data.labels = []
             chart.data.datasets[0] = []
             for(let label of $chartLabels){
-                chart.data.labels.push(label)
+                    /*
+                    chart.data.labels.push(GetHourFromUTC(label)) 
+                    */
+                   chart.data.labels.push(label)           
             }
             let rawData = []
             for(let dataEntry of $chartValues){

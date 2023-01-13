@@ -26,4 +26,3 @@
     </select>
     <button on:click={handleSubmit}>Submit</button>
 </form>
-<h1>{options.start} and {options.end} and {options.area}</h1>
