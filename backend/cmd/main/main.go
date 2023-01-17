@@ -1,13 +1,14 @@
 package main
 
 import (
-  "fmt"
+	"github.com/pocketbase/pocketbase"
+	"log"
 )
 
 func main() {
-  fmt.Println("I am alive!")
-}
+	app := pocketbase.New()
 
-func Plus(a int, b int) int {
-  return a + b 
+	if err := app.Start(); err != nil {
+		log.Fatal(err)
+	}
 }
