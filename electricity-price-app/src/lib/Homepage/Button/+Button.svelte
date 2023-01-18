@@ -19,7 +19,7 @@
         min-width: 10em;
         max-width: 40em;
         cursor: pointer;
-        background-color: var(--secondary-green);
+        background-color: var(--primary-green);
         border-radius: 1em;
         border-color: var(--text-black);
         font: var(--main-font-family);

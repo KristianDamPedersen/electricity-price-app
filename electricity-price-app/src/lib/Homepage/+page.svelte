@@ -1,7 +1,6 @@
 <script lang = "ts">
     import  {createRecords, FetchWithOptions } from "./stores";
     import { onMount } from 'svelte';
-	import OptionPicker from "./+OptionPicker.svelte";
     import Button from "./Button/+Button.svelte"
     import { writable } from 'svelte/store';
     import { createEventDispatcher } from 'svelte';
@@ -102,7 +101,7 @@
     {:catch error}
             <p>oops something went wrong: {error.message}</p>
     {/await}
-    <div class="button-container">
+    <div class="button-container-no-color">
         <Button text="24 hours" on:click = {() => fetchPreviousRecords(1)}/>
         <Button text="3 days" on:click = {() => fetchPreviousRecords(3)}/>
         <Button text="1 week" on:click = {() => fetchPreviousRecords(7)}/>
@@ -110,7 +109,6 @@
         <Button text="6 months" on:click={() => fetchPreviousRecords(180)}/>
         <Button text="12 months" on:click = {() =>fetchPreviousRecords(365)}/>
     </div>
-    <OptionPicker on:optionsubmit={handleSubmit}/>
 </div>
 
 <style> 
@@ -125,7 +123,16 @@
         z-index: 2;
         grid-template-columns: 20% 80%;
     }
-
+    .button-container-no-color{
+        align-self: center;
+        margin-top: 2em;
+        justify-content: center;
+        display: grid;
+        grid-auto-flow: column;
+        grid-template-columns: repeat(5, 1fr);
+        height: 100%;
+        max-width: 100em;
+    }
     .button-container {
         align-self: center;
         margin-top: 2em;
