@@ -143,8 +143,8 @@ func (dbc DbConnector) GetQuery() ([]GenericPowerEntry, error) {
 			}
 			return res, nil
 		default:
-			return []GenericPowerEntry{}, errors.New("Error: Query options does not conform to PocketbaseGetQueryOptions. See: ") // !TODO documentation here
+			return []GenericPowerEntry{}, errors.New("Error: Query options does not conform to PocketbaseGetQueryOptions. See: https://app.gitbook.com/o/P816f2Z2kPDJdQmEtF9C/s/feBqL0W0wcofeJfeIX7V/backend/documentation/module-database_connector/types/pocketbasegetqueryoptions")
 		}
 	}
-	return []GenericPowerEntry{}, errors.New("Unable to determine database, please visit: xxx to see valid database options") // !TODO documentation here
+	return []GenericPowerEntry{}, errors.New("Unable to determine database")
 }
