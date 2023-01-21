@@ -33,7 +33,7 @@ func TestCallEnergiDataService(t *testing.T) {
 	}
 
 	// Test that it returns expected output (based on the valid input variable above)
-	expected := EnergiDataServiceEntry{
+	expected := PowerPriceEntry{
 		HourUTC:      "2022-12-12T22:00:00",
 		HourDK:       "2022-12-12T23:00:00",
 		PriceArea:    "DK1",
