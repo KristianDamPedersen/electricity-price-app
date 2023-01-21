@@ -9,8 +9,16 @@ import (
 	"net/http"
 )
 
+// DbConnector is the main struct where we keep track of the database connection.
+//
+// endpoint is the endpoint to where get requests will be executed against.
+//
+// database is the desired database where contacting (only valid option at the moment is "Pocketbase")
+//
+// queryOptions expects a struct containing some parameters to be inserted into the query. Exact implementation will depend
+// on which database we use. But the queryOptions will always be validated before any query is executed.
 type DbConnector struct {
-	getEndpoint  string
+	endpoint     string
 	database     string
 	queryOptions any
 }
@@ -23,7 +31,7 @@ type PocketbaseGetQueryOptions struct {
 	expand  string // !TODO not implemented
 }
 
-type PocketbaseResponse struct {
+type _pocketbaseResponse struct {
 	page       int
 	perPage    int
 	totalItems int
@@ -37,38 +45,33 @@ type GenericPowerEntry struct {
 	priceDKK    float64
 }
 
-func (dbc DbConnector) _pocketbaseGetQuery(queryOptions any) ([]GenericPowerEntry, error) {
-
-	// Executing an HTTP request
-	resp, err := http.Get(dbc.getEndpoint)
+// HttpGetRequest executes a get request against a specific endpoint / query string.
+//
+// The queryString parameter is a full string containing both the address and associated query (so full HTTP req).
+//
+// Returns a []byte of the response, which can be unmarshalled later.
+func HttpGetRequest(queryString string) ([]byte, error) {
+	resp, err := http.Get(queryString)
 	if err != nil {
-		return []GenericPowerEntry{}, errors.New(fmt.Sprintf(`Unable to retrieve data from endpoint, got the following error: %v`, err))
+		return []byte{}, errors.New(fmt.Sprintf(`Unable to retrieve data from endpoint, got the following error: %v`, err))
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return []GenericPowerEntry{}, errors.New("Problems reading json response body from API call")
+		return []byte{}, errors.New("Problems reading json response body from API call")
 	}
+	return body, nil
+}
 
+// Unmashals the json response from pocketbase into the _pocketbaseResponse type.
+func _unmarshalJsonToPocketbaseResponse(jsonBody []byte) (_pocketbaseResponse, error) {
 	var jsonResponse map[string]any
-	json.Unmarshal(body, &jsonResponse)
+	json.Unmarshal(jsonBody, &jsonResponse)
 	if jsonResponse["code"] == float64(404) {
-		return []GenericPowerEntry{}, errors.New("Error: got 404 from server (hint: improperly formed query or maybe database is down?")
+		return _pocketbaseResponse{}, errors.New("Error: got 404 from server (hint: improperly formed query or maybe database is down?")
 	}
 
-	// Unmarshalling into PocketbaseResponse
-	fmt.Println(int64(jsonResponse["page"].(float64))) // page number
-	fmt.Println(jsonResponse["perPage"])               // perPage
-	fmt.Println(jsonResponse["totalItems"])            // totalItems
-	fmt.Println(jsonResponse["totalPages"])            // totalPages
-
-	fmt.Println(jsonResponse["items"].([]interface{})[0].(map[string]any)["priceDKK"])
-	fmt.Println(jsonResponse["items"].([]interface{})[0].(map[string]any)["priceEUR"])
-	fmt.Println(jsonResponse["items"].([]interface{})[0].(map[string]any)["datetime_UTC"])
-	fmt.Println(jsonResponse["items"].([]interface{})[0].(map[string]any)["datetime_DK"])
-	fmt.Println(jsonResponse["items"].([]interface{})[0].(map[string]any)["priceArea"])
-
-	pocketResponse := PocketbaseResponse{
+	pocketResponse := _pocketbaseResponse{
 		page:       int(jsonResponse["page"].(float64)),
 		perPage:    int(jsonResponse["perPage"].(float64)),
 		totalItems: int(jsonResponse["totalItems"].(float64)),
@@ -87,6 +90,22 @@ func (dbc DbConnector) _pocketbaseGetQuery(queryOptions any) ([]GenericPowerEntr
 		}
 		pocketResponse.items = append(pocketResponse.items, entry)
 	}
+	return pocketResponse, nil
+}
+
+// Specifically executes a get request against pocketbase.
+func (dbc DbConnector) _pocketbaseGetQuery(queryOptions any) ([]GenericPowerEntry, error) {
+
+	// Executing an HTTP request
+	body, err := HttpGetRequest(dbc.endpoint)
+	if err != nil {
+		return []GenericPowerEntry{}, err
+	}
+
+	pocketResponse, err := _unmarshalJsonToPocketbaseResponse(body)
+	if err != nil {
+		return []GenericPowerEntry{}, err
+	}
 
 	queryResponse := []GenericPowerEntry{}
 
@@ -102,11 +121,22 @@ func (dbc DbConnector) _pocketbaseGetQuery(queryOptions any) ([]GenericPowerEntr
 	return queryResponse, nil
 }
 
+// GetQuery executes a get query towards the database it is configured with, and the given options /
+// parameters provided.
+//
+// GetQuery() is a method on the DbConnector struct.
+//
+// Currently, "Pocketbase" is the only valid database connection.
+//
+// Returns a response consiting of a slice of GenericPowerEntry.
 func (dbc DbConnector) GetQuery() ([]GenericPowerEntry, error) {
+	// Changes depending on what database we are querying
 	switch dbc.database {
 	case "Pocketbase":
+		// After identifying Pocketbase, we now assert that the queryOptions has been configured correctly.
 		switch dbc.queryOptions.(type) {
 		case PocketbaseGetQueryOptions:
+			// If all is good, we execute the get query and return the response
 			res, err := dbc._pocketbaseGetQuery(dbc.queryOptions)
 			if err != nil {
 				return []GenericPowerEntry{}, errors.New(fmt.Sprintf(`Error executing get query on Pocketbase databse, got: %v`, err))

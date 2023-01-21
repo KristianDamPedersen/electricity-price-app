@@ -18,7 +18,7 @@ func TestGetQuery(t *testing.T) {
 
 	// DB Connector (valid)
 	dbc := DbConnector{
-		getEndpoint:  "https://electricity-price-app.fly.dev/api/collections/electricity_prices/records/",
+		endpoint:     "https://electricity-price-app.fly.dev/api/collections/electricity_prices/records/",
 		database:     "Pocketbase",
 		queryOptions: queryOptions,
 	}
@@ -31,7 +31,7 @@ func TestGetQuery(t *testing.T) {
 
 	// Returns error on invalid endpoint
 	dbcInvalidEndpoint := DbConnector{
-		getEndpoint:  "https://electricity-price-app.fly.dev/api/collections/electricity_prices/blablabla",
+		endpoint:     "https://electricity-price-app.fly.dev/api/collections/electricity_prices/blablabla",
 		database:     "Pocketbase",
 		queryOptions: queryOptions,
 	}
@@ -42,8 +42,8 @@ func TestGetQuery(t *testing.T) {
 
 	// test that GetQuery returns error on invalid database
 	dbcInvalidDatabase := DbConnector{
-		getEndpoint: "https://electricity-price-app.fly.dev/api/collections/electricity_prices/records/",
-		database:    "Bla bla bla",
+		endpoint: "https://electricity-price-app.fly.dev/api/collections/electricity_prices/records/",
+		database: "Bla bla bla",
 		queryOptions: PocketbaseGetQueryOptions{
 			page:    1,
 			perPage: 30,
@@ -59,7 +59,7 @@ func TestGetQuery(t *testing.T) {
 
 	// test that GetQuery returns error on invalid PocketbaseGetQueryFormatting
 	dbcInvalidPocketbaseQueryOptions := DbConnector{
-		getEndpoint:  "https://electricity-price-app.fly.dev/api/collections/electricity_prices/records/",
+		endpoint:     "https://electricity-price-app.fly.dev/api/collections/electricity_prices/records/",
 		database:     "Pocketbase",
 		queryOptions: nil,
 	}
