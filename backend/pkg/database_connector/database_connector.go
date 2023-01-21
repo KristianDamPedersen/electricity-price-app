@@ -10,9 +10,9 @@ import (
 )
 
 type DbConnector struct {
-	getEndpoint       string
-	preferredEndpoint string
-	queryOptions      any
+	getEndpoint  string
+	database     string
+	queryOptions any
 }
 
 type PocketbaseGetQueryOptions struct {
@@ -65,7 +65,7 @@ func (dbc DbConnector) _pocketbaseGetQuery(queryOptions any) ([]GenericPowerEntr
 }
 
 func (dbc DbConnector) GetQuery() ([]GenericPowerEntry, error) {
-	switch dbc.preferredEndpoint {
+	switch dbc.database {
 	case "Pocketbase":
 		switch dbc.queryOptions.(type) {
 		case PocketbaseGetQueryOptions:
