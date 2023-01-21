@@ -12,7 +12,7 @@ import (
 // Serves as intermediate conversion, we output a [] of these after calling the API through CallEnergiDataService.
 //
 // For documentation see: https://app.gitbook.com/o/P816f2Z2kPDJdQmEtF9C/s/feBqL0W0wcofeJfeIX7V/backend/documentation/module-data_gatherer/types/energidataserviceentry
-type PowerPriceEntry struct {
+type EnergiDataServiceEntry struct {
 	HourUTC      string
 	HourDK       string
 	PriceArea    string
@@ -43,17 +43,17 @@ func _ParsePriceAreaToAPI(priceArea string) (string, error) {
 }
 
 // Unmarshals the response from our API call into a slice of PowerPriceEntry's
-func _UnmarshalToEnergiDataServiceEntries(body []byte) []PowerPriceEntry {
+func _UnmarshalToEnergiDataServiceEntries(body []byte) []EnergiDataServiceEntry {
 	var jsonResponse map[string]any
 	json.Unmarshal(body, &jsonResponse)
 
 	records := jsonResponse["records"].([]interface{})
 
-	var energyEntries []PowerPriceEntry
+	var energyEntries []EnergiDataServiceEntry
 
 	for i := range records {
 		entry := records[i].(map[string]interface{})
-		energyEntry := PowerPriceEntry{
+		energyEntry := EnergiDataServiceEntry{
 			HourUTC:      entry["HourUTC"].(string),
 			HourDK:       entry["HourDK"].(string),
 			PriceArea:    entry["PriceArea"].(string),
@@ -94,22 +94,22 @@ func _queryEnergiDataService(query string) ([]byte, error) {
 //
 // priceArea specifies that pricing area we are interested in (currently supports "DK1" and "DK2")
 //
-// Returns a slice of PowerPriceEntry's (these entries are spaced 1 hour apart)
-func CallEnergiDataService(startDate string, endDate string, priceArea string) ([]PowerPriceEntry, error) {
+// Returns a slice of EnergiDataServiceEntry's (these entries are spaced 1 hour apart)
+func CallEnergiDataService(startDate string, endDate string, priceArea string) ([]EnergiDataServiceEntry, error) {
 
 	startDateFormatted, err := _ParseRFC3339StringToAPIString(startDate)
 	if err != nil {
-		return []PowerPriceEntry{}, err
+		return []EnergiDataServiceEntry{}, err
 	}
 
 	endDateFormatted, err := _ParseRFC3339StringToAPIString(endDate)
 	if err != nil {
-		return []PowerPriceEntry{}, err
+		return []EnergiDataServiceEntry{}, err
 	}
 
 	priceAreaFormatted, err := _ParsePriceAreaToAPI(priceArea)
 	if err != nil {
-		return []PowerPriceEntry{}, err
+		return []EnergiDataServiceEntry{}, err
 	}
 
 	// HTML get request

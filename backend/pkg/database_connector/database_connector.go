@@ -28,12 +28,13 @@ type PocketbaseResponse struct {
 	perPage    int
 	totalItems int
 	totalPages int
-	items      []dg.PowerPriceEntry
+	items      []dg.EnergiDataServiceEntry
 }
 
 type GenericPowerEntry struct {
-	HourUTC      string
-	SpotPriceEUR float64
+	datetimeUTC string
+	priceEUR    float64
+	priceDKK    float64
 }
 
 func (dbc DbConnector) _pocketbaseGetQuery(queryOptions any) ([]GenericPowerEntry, error) {
@@ -55,13 +56,50 @@ func (dbc DbConnector) _pocketbaseGetQuery(queryOptions any) ([]GenericPowerEntr
 		return []GenericPowerEntry{}, errors.New("Error: got 404 from server (hint: improperly formed query or maybe database is down?")
 	}
 
-	return []GenericPowerEntry{
-		{
-			HourUTC:      "bla bla",
-			SpotPriceEUR: 250.0,
-		},
-	}, nil
+	// Unmarshalling into PocketbaseResponse
+	fmt.Println(int64(jsonResponse["page"].(float64))) // page number
+	fmt.Println(jsonResponse["perPage"])               // perPage
+	fmt.Println(jsonResponse["totalItems"])            // totalItems
+	fmt.Println(jsonResponse["totalPages"])            // totalPages
 
+	fmt.Println(jsonResponse["items"].([]interface{})[0].(map[string]any)["priceDKK"])
+	fmt.Println(jsonResponse["items"].([]interface{})[0].(map[string]any)["priceEUR"])
+	fmt.Println(jsonResponse["items"].([]interface{})[0].(map[string]any)["datetime_UTC"])
+	fmt.Println(jsonResponse["items"].([]interface{})[0].(map[string]any)["datetime_DK"])
+	fmt.Println(jsonResponse["items"].([]interface{})[0].(map[string]any)["priceArea"])
+
+	pocketResponse := PocketbaseResponse{
+		page:       int(jsonResponse["page"].(float64)),
+		perPage:    int(jsonResponse["perPage"].(float64)),
+		totalItems: int(jsonResponse["totalItems"].(float64)),
+		totalPages: int(jsonResponse["totalPages"].(float64)),
+		items:      []dg.EnergiDataServiceEntry{},
+	}
+
+	for i := range jsonResponse["items"].([]interface{}) {
+		items := jsonResponse["items"].([]interface{})[i].(map[string]any)
+		entry := dg.EnergiDataServiceEntry{
+			HourUTC:      items["datetime_UTC"].(string),
+			HourDK:       items["datetime_DK"].(string),
+			PriceArea:    items["priceArea"].(string),
+			SpotPriceDKK: items["priceDKK"].(float64),
+			SpotPriceEUR: items["priceEUR"].(float64),
+		}
+		pocketResponse.items = append(pocketResponse.items, entry)
+	}
+
+	queryResponse := []GenericPowerEntry{}
+
+	for i := range pocketResponse.items {
+		entry := GenericPowerEntry{
+			datetimeUTC: pocketResponse.items[i].HourUTC,
+			priceEUR:    pocketResponse.items[i].SpotPriceEUR,
+			priceDKK:    pocketResponse.items[i].SpotPriceDKK,
+		}
+		queryResponse = append(queryResponse, entry)
+	}
+
+	return queryResponse, nil
 }
 
 func (dbc DbConnector) GetQuery() ([]GenericPowerEntry, error) {
@@ -74,6 +112,8 @@ func (dbc DbConnector) GetQuery() ([]GenericPowerEntry, error) {
 				return []GenericPowerEntry{}, errors.New(fmt.Sprintf(`Error executing get query on Pocketbase databse, got: %v`, err))
 			}
 			return res, nil
+		default:
+			return []GenericPowerEntry{}, errors.New("Error: Query options does not conform to PocketbaseGetQueryOptions. See: ") // !TODO documentation here
 		}
 	}
 	return []GenericPowerEntry{}, errors.New("Unable to determine database, please visit: xxx to see valid database options") // !TODO documentation here

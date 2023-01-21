@@ -41,6 +41,44 @@ func TestGetQuery(t *testing.T) {
 	}
 
 	// test that GetQuery returns error on invalid database
+	dbcInvalidDatabase := DbConnector{
+		getEndpoint: "https://electricity-price-app.fly.dev/api/collections/electricity_prices/records/",
+		database:    "Bla bla bla",
+		queryOptions: PocketbaseGetQueryOptions{
+			page:    1,
+			perPage: 30,
+			sort:    "",
+			filter:  "",
+			expand:  "",
+		},
+	}
+	_, err = dbcInvalidDatabase.GetQuery()
+	if err == nil {
+		t.Fatalf("GetQuery() does not return error on invalid database")
+	}
+
+	// test that GetQuery returns error on invalid PocketbaseGetQueryFormatting
+	dbcInvalidPocketbaseQueryOptions := DbConnector{
+		getEndpoint:  "https://electricity-price-app.fly.dev/api/collections/electricity_prices/records/",
+		database:     "Pocketbase",
+		queryOptions: nil,
+	}
+	_, err = dbcInvalidPocketbaseQueryOptions.GetQuery()
+	if err == nil {
+		t.Fatalf("GetQuery() does not return error on invalid pocketbase query formatting")
+	}
+
+	// Test that GetQuery (on Pocketbase) returns error on unexpected return value ( !TODO this will break once the other queries are in place )
+	expected := GenericPowerEntry{
+		datetimeUTC: "2023-01-04 12:00:00.000Z",
+		priceEUR:    35.01,
+		priceDKK:    20.21,
+	}
+
+	res, _ = dbc.GetQuery()
+	if res[0] != expected {
+		t.Fatalf("Recieved wrong return value from pocketbase, expected %v but got %v", expected, res)
+	}
 }
 
 // ### CREATE QUERY
