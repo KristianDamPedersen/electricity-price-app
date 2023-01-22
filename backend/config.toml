@@ -1,0 +1,3 @@
+[database]
+# Configuration for pocketbase
+pocketbase.getEndpoint = "https://electricity-price-app.fly.dev/api/collections/electricity_prices/records/"

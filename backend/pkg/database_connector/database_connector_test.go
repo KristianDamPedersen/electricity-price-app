@@ -18,7 +18,7 @@ func TestGetQuery(t *testing.T) {
 
 	// DB Connector (valid)
 	dbc := DbConnector{
-		endpoint:     "https://electricity-price-app.fly.dev/api/collections/electricity_prices/records/",
+		queryType:    "GET",
 		database:     "Pocketbase",
 		queryOptions: queryOptions,
 	}
@@ -29,20 +29,8 @@ func TestGetQuery(t *testing.T) {
 		t.Fatalf("GetQuery() returns empty")
 	}
 
-	// Returns error on invalid endpoint
-	dbcInvalidEndpoint := DbConnector{
-		endpoint:     "https://electricity-price-app.fly.dev/api/collections/electricity_prices/blablabla",
-		database:     "Pocketbase",
-		queryOptions: queryOptions,
-	}
-	_, err := dbcInvalidEndpoint.GetQuery()
-	if err == nil {
-		t.Fatalf("GetQuery() does not return error on invalid endpoint")
-	}
-
 	// test that GetQuery returns error on invalid database
 	dbcInvalidDatabase := DbConnector{
-		endpoint: "https://electricity-price-app.fly.dev/api/collections/electricity_prices/records/",
 		database: "Bla bla bla",
 		queryOptions: PocketbaseGetQueryOptions{
 			page:    1,
@@ -52,14 +40,14 @@ func TestGetQuery(t *testing.T) {
 			expand:  "",
 		},
 	}
-	_, err = dbcInvalidDatabase.GetQuery()
+	_, err := dbcInvalidDatabase.GetQuery()
 	if err == nil {
 		t.Fatalf("GetQuery() does not return error on invalid database")
 	}
 
 	// test that GetQuery returns error on invalid PocketbaseGetQueryFormatting
 	dbcInvalidPocketbaseQueryOptions := DbConnector{
-		endpoint:     "https://electricity-price-app.fly.dev/api/collections/electricity_prices/records/",
+		queryType:    "Get",
 		database:     "Pocketbase",
 		queryOptions: nil,
 	}
@@ -78,6 +66,23 @@ func TestGetQuery(t *testing.T) {
 	res, _ = dbc.GetQuery()
 	if res[0] != expected {
 		t.Fatalf("Recieved wrong return value from pocketbase, expected %v but got %v", expected, res)
+	}
+
+	// Test that GetQuery (on pocketbase) returns error if its not configured as Get query.
+	dbcInvalidType := DbConnector{
+		queryType: "INVALID TYPE",
+		database:  "Pocketbase",
+		queryOptions: PocketbaseGetQueryOptions{
+			page:    1,
+			perPage: 30,
+			sort:    "",
+			filter:  "",
+			expand:  "",
+		},
+	}
+	_, err = dbcInvalidType.GetQuery()
+	if err == nil {
+		t.Fatalf("GetQuery() does not return error on invalid type")
 	}
 }
 

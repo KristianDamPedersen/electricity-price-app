@@ -2,7 +2,10 @@ module backend
 
 go 1.18
 
-require github.com/pocketbase/pocketbase v0.11.2
+require (
+	github.com/pelletier/go-toml v1.9.3
+	github.com/pocketbase/pocketbase v0.11.2
+)
 
 require (
 	github.com/AlecAivazis/survey/v2 v2.3.6 // indirect

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/pelletier/go-toml"
 	"io/ioutil"
 	"net/http"
 )
@@ -18,7 +19,7 @@ import (
 // queryOptions expects a struct containing some parameters to be inserted into the query. Exact implementation will depend
 // on which database we use. But the queryOptions will always be validated before any query is executed.
 type DbConnector struct {
-	endpoint     string
+	queryType    string
 	database     string
 	queryOptions any
 }
@@ -95,9 +96,12 @@ func _unmarshalJsonToPocketbaseResponse(jsonBody []byte) (_pocketbaseResponse, e
 
 // Specifically executes a get request against pocketbase.
 func (dbc DbConnector) _pocketbaseGetQuery(queryOptions any) ([]GenericPowerEntry, error) {
+	// Read TOML
+	t, err := toml.LoadFile("../../config.toml")
+	endpoint := t.Get("database.pocketbase.getEndpoint").(string)
 
 	// Executing an HTTP request
-	body, err := HttpGetRequest(dbc.endpoint)
+	body, err := HttpGetRequest(endpoint)
 	if err != nil {
 		return []GenericPowerEntry{}, err
 	}
@@ -130,6 +134,11 @@ func (dbc DbConnector) _pocketbaseGetQuery(queryOptions any) ([]GenericPowerEntr
 //
 // Returns a response consiting of a slice of GenericPowerEntry.
 func (dbc DbConnector) GetQuery() ([]GenericPowerEntry, error) {
+	// Check that the connector is configured as get
+	if dbc.queryType != "GET" {
+		return []GenericPowerEntry{}, errors.New("error: GetQuery() can only be executed on connectors configured as Get")
+	}
+
 	// Changes depending on what database we are querying
 	switch dbc.database {
 	case "Pocketbase":
@@ -143,8 +152,8 @@ func (dbc DbConnector) GetQuery() ([]GenericPowerEntry, error) {
 			}
 			return res, nil
 		default:
-			return []GenericPowerEntry{}, errors.New("Error: Query options does not conform to PocketbaseGetQueryOptions. See: https://app.gitbook.com/o/P816f2Z2kPDJdQmEtF9C/s/feBqL0W0wcofeJfeIX7V/backend/documentation/module-database_connector/types/pocketbasegetqueryoptions")
+			return []GenericPowerEntry{}, errors.New("error: Query options does not conform to PocketbaseGetQueryOptions. See: https://app.gitbook.com/o/P816f2Z2kPDJdQmEtF9C/s/feBqL0W0wcofeJfeIX7V/backend/documentation/module-database_connector/types/pocketbasegetqueryoptions")
 		}
 	}
-	return []GenericPowerEntry{}, errors.New("Unable to determine database")
+	return []GenericPowerEntry{}, errors.New("unable to determine database")
 }
