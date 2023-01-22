@@ -32,7 +32,28 @@ type PocketbaseGetQueryOptions struct {
 	expand  string // !TODO not implemented
 }
 
-type _pocketbaseResponse struct {
+type PocketbasePostQueryOptions struct {
+	datetimeUTC string
+	datetimeDK  string
+	priceArea   string
+	priceDKK    float64
+	priceEUR    float64
+}
+
+type _pocketbaseCreateResponse struct {
+	collectionId   string
+	collectionName string
+	created        string
+	datetime_DK    string
+	datetime_UTC   string
+	id             string
+	priceArea      string
+	priceDKK       string
+	priceEUR       string
+	updated        string
+}
+
+type _pocketbaseGetResponse struct {
 	page       int
 	perPage    int
 	totalItems int
@@ -44,6 +65,11 @@ type GenericPowerEntry struct {
 	datetimeUTC string
 	priceEUR    float64
 	priceDKK    float64
+}
+
+type GenericPostConfirmation struct {
+	code    int
+	message any
 }
 
 // HttpGetRequest executes a get request against a specific endpoint / query string.
@@ -64,15 +90,15 @@ func HttpGetRequest(queryString string) ([]byte, error) {
 	return body, nil
 }
 
-// Unmashals the json response from pocketbase into the _pocketbaseResponse type.
-func _unmarshalJsonToPocketbaseResponse(jsonBody []byte) (_pocketbaseResponse, error) {
+// Unmashals the json response from pocketbase into the _pocketbaseGetResponse type.
+func _unmarshalJsonToPocketbaseResponse(jsonBody []byte) (_pocketbaseGetResponse, error) {
 	var jsonResponse map[string]any
 	json.Unmarshal(jsonBody, &jsonResponse)
 	if jsonResponse["code"] == float64(404) {
-		return _pocketbaseResponse{}, errors.New("Error: got 404 from server (hint: improperly formed query or maybe database is down?")
+		return _pocketbaseGetResponse{}, errors.New("Error: got 404 from server (hint: improperly formed query or maybe database is down?")
 	}
 
-	pocketResponse := _pocketbaseResponse{
+	pocketResponse := _pocketbaseGetResponse{
 		page:       int(jsonResponse["page"].(float64)),
 		perPage:    int(jsonResponse["perPage"].(float64)),
 		totalItems: int(jsonResponse["totalItems"].(float64)),
@@ -156,4 +182,36 @@ func (dbc DbConnector) GetQuery() ([]GenericPowerEntry, error) {
 		}
 	}
 	return []GenericPowerEntry{}, errors.New("unable to determine database")
+}
+
+// Lets code the create query! (Not yet implemented)
+func (dbc DbConnector) PostQuery() (GenericPostConfirmation, error) {
+	if dbc.queryType != "POST" {
+		return GenericPostConfirmation{
+			code:    400,
+			message: "Connector not configured as POST",
+		}, errors.New("error: DbConnector not configured as POST")
+	}
+
+	// Identify which database we're querying
+	switch dbc.database {
+	case "Pocketbase":
+		switch dbc.queryOptions.(type) {
+		case PocketbasePostQueryOptions:
+			return GenericPostConfirmation{
+				code:    200,
+				message: "Recieved",
+			}, nil
+		default:
+			return GenericPostConfirmation{
+				code:    400,
+				message: "Invalid query options. Please use Pocketbase post query options",
+			}, errors.New("invalid configuration of query options. Expected PocketbasePostQueryOptions")
+		}
+	default:
+		return GenericPostConfirmation{
+			code:    400,
+			message: "Could not identify database",
+		}, errors.New("DbConnector not configured with valid database")
+	}
 }

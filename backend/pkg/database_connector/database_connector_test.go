@@ -1,6 +1,7 @@
 package databaseConnector
 
 import (
+	"fmt"
 	"testing"
 )
 
@@ -87,6 +88,65 @@ func TestGetQuery(t *testing.T) {
 }
 
 // ### CREATE QUERY
+func TestPostQuery(t *testing.T) {
+	// Valid configuration
+	dbc := DbConnector{
+		queryType:    "POST",
+		database:     "Pocketbase",
+		queryOptions: PocketbasePostQueryOptions{},
+	}
+
+	fmt.Println(dbc)
+
+	sampleQueryOptions := PocketbasePostQueryOptions{
+		datetimeUTC: "2022-01-01 10:00:00.123Z",
+		datetimeDK:  "2022-01-01 10:00:00.123Z",
+		priceArea:   "DK1",
+		priceDKK:    123.123,
+		priceEUR:    123.123,
+	}
+
+	// Test that it returns error if it is not configured as a POST request
+	dbcInvalidType := DbConnector{
+		queryType:    "INVALID TYPE",
+		database:     "Pocketbase",
+		queryOptions: sampleQueryOptions,
+	}
+	_, err := dbcInvalidType.PostQuery()
+	if err == nil {
+		t.Fatalf("PostQuery() does not return error on invalid type")
+	}
+
+	// Test that it returns error if it is not configured with a valid database
+	dbcInvalidDatabase := DbConnector{
+		queryType:    "POST",
+		database:     "INVALID DATABASE",
+		queryOptions: sampleQueryOptions,
+	}
+	_, err = dbcInvalidDatabase.PostQuery()
+	if err == nil {
+		t.Fatalf("PostQuery() does not return error on invalid database")
+	}
+
+	// Test that it returns error when querying Pocketbase with invalid query options
+	dbcInvalidQueryOptions := DbConnector{
+		queryType: "POST",
+		database:  "Pocketbase",
+		queryOptions: PocketbaseGetQueryOptions{
+			page:    1,
+			perPage: 30,
+			sort:    "",
+			filter:  "",
+			expand:  "",
+		},
+	}
+	_, err = dbcInvalidQueryOptions.PostQuery()
+	if err == nil {
+		t.Fatalf("PostQuery() does not return error on invalid query options when querying Pocketbase")
+	}
+
+	// Test that it throws an error if it recieves unexpected reply from
+}
 
 // ### UPDATE QUERY
 
