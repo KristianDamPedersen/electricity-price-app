@@ -41,10 +41,11 @@ export function createRecords() {
             return hours
         }),
         getPrices: () => (function(oldRecords) {
+            console.log("getting prices")
             let prices = []
             oldRecords.map( record => prices.push(record.SpotPriceDKK));
             return prices
-        })
+        }),
     }
 
 }
