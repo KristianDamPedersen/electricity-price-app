@@ -39,6 +39,7 @@
                 data: rawData,
                 fill: true,
                 pointStyle: 'circle',
+                lineTension: 0.4,
                 pointRadius: 10,
                 backgroundColor: hex2rgba(fillColor, 0.5),
                 pointHoverRadius: 15,
